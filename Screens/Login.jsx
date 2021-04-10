@@ -25,7 +25,7 @@ export default function Login({navigation}) {
               })
             })
             .then(res => {
-
+                
                 if(res.ok){
                     if(checked){
                         storeData('rememberMe', true);
@@ -33,15 +33,11 @@ export default function Login({navigation}) {
                     storeData('allowd', true);
                     setAllowd(true);
                 }
-                else{
-                    storeData('allowd', false);
-                }
                 return res.json();
-
             })
             .then((result) => {
-                alert(result);
                 storeData('id', result);
+                alert(result);
               },
               (error) => {
                 alert(error);
@@ -49,19 +45,20 @@ export default function Login({navigation}) {
         );
     }
 
-    const storeData = async (storage_Key,value) => {
+    const storeData = async(storage_Key,value) => {
         try {
         const jsonValue = JSON.stringify(value);
-        await AsyncStorage.setItem('@'+storage_Key,jsonValue);
+        await AsyncStorage.setItem(`@${storage_Key}`,jsonValue);
         } catch (e) {
             console.log(e);
         }
     }
     
-    const getData = async (key) => {
+    const getData = async(key) => {
         try {
-        const jsonValue = await AsyncStorage.getItem('@'+key)
-        return jsonValue != null ? JSON.parse(jsonValue) : null;
+        await AsyncStorage.getItem(`@${key}`,(err,result)=>{
+            return result !== null ? JSON.parse(result) : null;
+        });
         } catch(e) {
             console.log(e);
         }
@@ -70,6 +67,7 @@ export default function Login({navigation}) {
     useEffect(() => {
         if(allowd){
             navigation.navigate('HomePage');
+            setAllowd(false);
         }
     },[allowd]);
 
