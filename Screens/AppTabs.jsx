@@ -5,6 +5,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import HomePage from './HomePage';
 import Schedule from './Schedule';
+import Notifications from './Notifications';
+import Messages from './Messages';
 
 
 const apiUrl="http://proj.ruppin.ac.il/bgroup19/prod/api/";
@@ -19,11 +21,13 @@ export default function AppTabs() {
                 let iconName;
     
                 if (route.name === 'HomePage') {
-                    iconName = focused
-                    ? 'home'
-                    : 'home-outline';
+                    iconName = focused ? 'home': 'home-outline';
                 } else if (route.name === 'Schedule') {
                     iconName = focused ? 'calendar' : 'calendar-sharp';
+                } else if (route.name === 'Notifications') {
+                    iconName = focused ? 'notifications' : 'notifications-outline';
+                } else if (route.name === 'Messages') {
+                    iconName = focused ? 'mail' : 'mail-outline';
                 }
                 return <Ionicons name={iconName} size={size} color={color} />;
                 },
@@ -35,6 +39,8 @@ export default function AppTabs() {
         >
             <Tab.Screen name="HomePage" options={{tabBarLabel:'דף הבית'}} component={HomePage}/>
             <Tab.Screen name="Schedule" options={{tabBarLabel:'יומן'}} component={Schedule}/>
+            <Tab.Screen name="Notifications" options={{tabBarLabel:'התראות'}} component={Notifications}/>
+            <Tab.Screen name="Messages" options={{tabBarLabel:'הודעות'}} component={Messages}/>
         </Tab.Navigator>
     )
 }

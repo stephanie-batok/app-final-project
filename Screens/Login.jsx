@@ -25,12 +25,11 @@ export default function Login({navigation}) {
               })
             })
             .then(res => {
-                
+
                 if(res.ok){
                     if(checked){
                         storeData('rememberMe', true);
                     }
-                    storeData('allowd', true);
                     setAllowd(true);
                 }
                 return res.json();
@@ -38,6 +37,7 @@ export default function Login({navigation}) {
             .then((result) => {
                 storeData('id', result);
                 alert(result);
+
               },
               (error) => {
                 alert(error);
@@ -54,28 +54,23 @@ export default function Login({navigation}) {
         }
     }
     
-    const getData = async(key) => {
-        try {
-        await AsyncStorage.getItem(`@${key}`,(err,result)=>{
-            return result !== null ? JSON.parse(result) : null;
-        });
+    useEffect(() => {
+        try{
+            AsyncStorage.getItem("@rememberMe",(err,result)=>{
+                return result !== null ? setAllowd(JSON.parse(result)) : null;
+            });
+            
         } catch(e) {
             console.log(e);
         }
-    }
-
+    },[]);
+    
     useEffect(() => {
         if(allowd){
             navigation.navigate('HomePage');
             setAllowd(false);
         }
     },[allowd]);
-
-    useEffect(() => {
-        if(getData("rememberMe")!==null && getData("allowd")===true){
-            setAllowd(true);
-        }
-    },[]);
 
     return (
         <View style={styles.container}>
