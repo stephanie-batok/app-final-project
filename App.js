@@ -6,7 +6,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 
-
 import Login from './Screens/Login';
 import AppTabs from './Screens/AppTabs';
 import Schedule from './Screens/Schedule';

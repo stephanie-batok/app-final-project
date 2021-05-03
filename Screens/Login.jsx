@@ -6,12 +6,29 @@ import logo from '../horse-club-logo.png';
 
 
 export default function Login({navigation}) {
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [allowd,setAllowd]= useState(false);
     const [checked, setChecked] = useState(false);
+    
 
+    useEffect(() => {
+        try{
+            AsyncStorage.getItem("@rememberMe",(err,result)=>{
+                return result !== null ? setAllowd(JSON.parse(result)) : null;
+            });
+            
+        } catch(e) {
+            console.log(e);
+        }
+    },[]);
+
+    useEffect(() => {
+        if(allowd){
+            navigation.navigate('HomePage');
+            setAllowd(false);
+        }
+    },[allowd]);
 
     const btn_LogIn = () => {
         let apiUrl= "http://proj.ruppin.ac.il/bgroup19/prod/api/AppUser/";
@@ -53,24 +70,6 @@ export default function Login({navigation}) {
             console.log(e);
         }
     }
-    
-    useEffect(() => {
-        try{
-            AsyncStorage.getItem("@rememberMe",(err,result)=>{
-                return result !== null ? setAllowd(JSON.parse(result)) : null;
-            });
-            
-        } catch(e) {
-            console.log(e);
-        }
-    },[]);
-    
-    useEffect(() => {
-        if(allowd){
-            navigation.navigate('HomePage');
-            setAllowd(false);
-        }
-    },[allowd]);
 
     return (
         <View style={styles.container}>
