@@ -3,11 +3,13 @@ import { Text,TouchableOpacity, StyleSheet, View, Image,KeyboardAvoidingView} fr
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Item, Label,CheckBox,Input, Form, ListItem} from 'native-base';
 import logo from '../horse-club-logo.png';
+import apiUrl from '../global';
 
 
 export default function Login({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [id, setId] = useState("");
     const [allowd,setAllowd]= useState(false);
     const [checked, setChecked] = useState(false);
     
@@ -28,12 +30,13 @@ export default function Login({navigation}) {
             navigation.navigate('HomePage');
             setAllowd(false);
         }
-    },[allowd]);
+    },[id]);
 
     const btn_LogIn = () => {
-        let apiUrl= "http://proj.ruppin.ac.il/bgroup19/prod/api/AppUser/";
+        
+        console.log(password+" "+email);
 
-        fetch(apiUrl+email+"/"+password,
+        fetch(apiUrl+"AppUser/"+email+"/"+password,
             {
               method: 'GET',
               headers: new Headers({
@@ -42,66 +45,71 @@ export default function Login({navigation}) {
               })
             })
             .then(res => {
-
                 if(res.ok){
                     if(checked){
                         storeData('rememberMe', true);
                     }
                     setAllowd(true);
+                    storeData('email',email);
                 }
                 return res.json();
             })
             .then((result) => {
                 storeData('id', result);
-                alert(result);
-
+                setId(result);
+                console.log(result);
               },
               (error) => {
-                alert(error);
+                console.log(error);
             }
         );
     }
 
     const storeData = async(storage_Key,value) => {
         try {
-        const jsonValue = JSON.stringify(value);
-        await AsyncStorage.setItem(`@${storage_Key}`,jsonValue);
+            const jsonValue = JSON.stringify(value);
+            await AsyncStorage.setItem(`@${storage_Key}`,jsonValue);
         } catch (e) {
             console.log(e);
         }
     }
 
     return (
-        <View style={styles.container}>
-            <Image source={logo} style={styles.logo}/>
-            <View style={styles.form}>
-                <Form>
-                    <Item stackedLabel>
-                        <Label>דואר אלקטרוני</Label>
-                        <Input onChangeText={text => setEmail(text)} />
-                    </Item>
-                    <Item stackedLabel>
-                        <Label>סיסמה</Label>
-                        <Input onChangeText={text => setPassword(text)} />
-                    </Item>
-                    <ListItem icon>
-                        <CheckBox
-                            checked={checked}
-                            color="green"
-                            onPress={() =>
-                            setChecked(!checked)
-                            }/>
-                        <Text> זכור אותי</Text>
-                    </ListItem>
-                    <TouchableOpacity
-                        style={styles.loginBtn}
-                        onPress={btn_LogIn}
-                    >
-                        <Text style={styles.loginText}>התחבר</Text>
-                    </TouchableOpacity>
-                </Form>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : null}
+            style={{ flex: 1 }}
+        >
+            <View style={styles.container}>
+                <Image source={logo} style={styles.logo}/>
+                <View style={styles.form}>
+                    <Form>
+                        <Item stackedLabel>
+                            <Label>דואר אלקטרוני</Label>
+                            <Input onChangeText={text => setEmail(text)} />
+                        </Item>
+                        <Item stackedLabel>
+                            <Label>סיסמה</Label>
+                            <Input onChangeText={text => setPassword(text)} />
+                        </Item>
+                        <ListItem icon>
+                            <CheckBox
+                                checked={checked}
+                                color="green"
+                                onPress={() =>
+                                setChecked(!checked)
+                                }/>
+                            <Text> זכור אותי</Text>
+                        </ListItem>
+                        <TouchableOpacity
+                            style={styles.loginBtn}
+                            onPress={btn_LogIn}
+                        >
+                            <Text style={styles.loginText}>התחבר</Text>
+                        </TouchableOpacity>
+                    </Form>
+                </View>
             </View>
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 

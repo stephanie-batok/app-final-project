@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text,TouchableOpacity,View,StyleSheet} from 'react-native';
 import {Card, CardItem, Body} from 'native-base';
+import apiUrl from '../global';
 
 
 export default function ViewLesson({route,navigation}) {
@@ -10,9 +11,8 @@ export default function ViewLesson({route,navigation}) {
 
     
     useEffect(() => {
-        let apiUrl= "http://proj.ruppin.ac.il/bgroup19/prod/api/AppUser/Lesson/";
 
-        fetch(apiUrl+"/"+id+"/"+lesson_id,
+        fetch(apiUrl+"AppUser/Lesson/"+id+"/"+lesson_id,
             {
                 method: 'GET',
                 headers: new Headers({

@@ -3,10 +3,11 @@ import { Text,TouchableOpacity,View,StyleSheet} from 'react-native';
 import {Card, CardItem, Body} from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Agenda} from 'react-native-calendars';
+import apiUrl from '../global';
 
 
 export default function Schedule({navigation}) {
-    const [lessons,setLessons] = useState([])
+    const [lessons,setLessons] = useState([]);
     const [items,setItems] = useState("");
     const [id,setId] = useState("");
     const [user_type,setUser_type] = useState("");
@@ -26,9 +27,7 @@ export default function Schedule({navigation}) {
     useEffect(() => {
 
         if(id!==""){
-            let apiUrl= "http://proj.ruppin.ac.il/bgroup19/prod/api/AppUser/Lessons/";
-
-            fetch(apiUrl+"/"+id,
+            fetch(apiUrl+"AppUser/Lessons/"+id,
                 {
                     method: 'GET',
                     headers: new Headers({
@@ -52,7 +51,6 @@ export default function Schedule({navigation}) {
                 }
             );
         }
-        
     },[id]);
 
     useEffect(()=>{

@@ -11,7 +11,9 @@ import AppTabs from './Screens/AppTabs';
 import Schedule from './Screens/Schedule';
 import ViewLesson from './Screens/ViewLesson';
 import Notifications from './Screens/Notifications';
-import Messages from './Screens/Messages';
+import Chat from './Screens/Chat';
+import UserChats from './Screens/UserChats';
+import ContactList from './Screens/ContactList';
 
 
 const Stack = createStackNavigator();
@@ -32,7 +34,7 @@ export default class App extends Component {
         return 'יומן';
       case 'Notifications':
         return 'התראות';
-      case 'Messages':
+      case 'UserChats':
         return 'הודעות';
     }
   }
@@ -46,7 +48,9 @@ export default class App extends Component {
                 <Stack.Screen name="Schedule" options={{headerTitle:"יומן"}} component={Schedule}/>
                 <Stack.Screen name="ViewLesson" options={{headerTitle:"צפייה בשיעור"}} component={ViewLesson}/>
                 <Stack.Screen name="Notifications" options={{headerTitle:"התראות"}} component={Notifications}/>
-                <Stack.Screen name="Messages" options={{headerTitle:"הודעות"}} component={Messages}/>
+                <Stack.Screen name="UserChats" options={{headerTitle:"הודעות"}} component={UserChats}/>
+                <Stack.Screen name="Chat" options={{headerTitle:"הודעה"}} component={Chat}/>
+                <Stack.Screen name="ContactList" options={{headerTitle:"אנשי קשר"}} component={ContactList}/>
             </Stack.Navigator>
           </NavigationContainer>
     )
