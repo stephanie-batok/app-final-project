@@ -1,44 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import { Text,TouchableOpacity,View,StyleSheet,FlatList} from 'react-native';
-import { Container, Content, ListItem } from 'native-base';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ListItem} from 'native-base';
 import apiUrl from '../global';
 
 
-export default function ContactList({route,navigation}) {
-    const {my_id} = route.params;
+export default function ContactList({navigation}) {
+    const [my_id,setMy_Id] = useState("");
     const [contacts,setContacts] = useState([]);
     const [chat_num,setChat_num] = useState("");
     const [sendToId,setSendToId] = useState("");
 
+    
+    useEffect(() => {
+        AsyncStorage.getItem("@id",(err,result)=>{
+            return result !== null ? setMy_Id(JSON.parse(result)) : null;
+        });
+    },[]);
+
 
     useEffect(() => {
-        fetch(apiUrl+"SystemUser/",
-            {
-                method: 'GET',
-                headers: new Headers({
-                'Content-Type': 'application/json; charset=UTF-8',
-                'Accept': 'application/json; charset=UTF-8',
+        if(my_id!==""){
+            fetch(apiUrl+"SystemUser/",
+                {
+                    method: 'GET',
+                    headers: new Headers({
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    'Accept': 'application/json; charset=UTF-8',
+                    })
                 })
-            })
-            .then(res => {
-                return res.json();
-            })
-            .then((result) => {
-                    let temp = result.filter(x=>x.id!==my_id);
-                    setContacts(temp);
-                },
-                (error) => {
-                alert(error);
-            }
-        );
-    }, []);
+                .then(res => {
+                    return res.json();
+                })
+                .then((result) => {
+                        let temp = result.filter(x=>x.id!==my_id);
+                        setContacts(temp);
+                    },
+                    (error) => {
+                    alert(error);
+                }
+            );
+        }
+    }, [my_id]);
 
     renderItem = ({ item }) => {
-          return (
+        return (
                 <ListItem onPress={go2Chat(item.id)}>
                     <Text>{item.first_name+" "+item.last_name}</Text>
                 </ListItem>
-          );
+        );
     };
 
     const go2Chat = (selectedId) => e => {
@@ -63,7 +73,6 @@ export default function ContactList({route,navigation}) {
                 return res.json();
             })
             .then((result) => {
-                console.log(result);
                 setChat_num(result);
             },
             (error) => {
@@ -87,7 +96,7 @@ export default function ContactList({route,navigation}) {
         <FlatList
             data={contacts}
             renderItem={this.renderItem}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.id.toString()}
         >
         </FlatList>
     )

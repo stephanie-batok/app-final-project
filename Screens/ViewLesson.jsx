@@ -35,9 +35,20 @@ export default function ViewLesson({route,navigation}) {
         );
     },[]);
 
+    const goToRiderFeedback = (lesson_id) => {
+        navigation.navigate('RiderFeedback',{
+            lesson_id:lesson_id,
+        });
+    }
+
     return (
         <View style={styles.container}>
                 <Card style={styles.item}>
+                  <CardItem>
+                        <TouchableOpacity onPress={() => goToRiderFeedback(lesson.lesson_id)}>
+                            <Text>מילוי משוב</Text>
+                        </TouchableOpacity>
+                  </CardItem>
                   <CardItem>
                           {user_type==="rider"?
                           <Body>

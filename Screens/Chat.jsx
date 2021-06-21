@@ -63,12 +63,16 @@ export default function Chat({route,navigation}) {
             text,
             user
         });
-
+        
         const chat = {
             chat_num:chat_num,
             dateTime:createdAt,
+            dateStr: new Date().toLocaleDateString(),
+            timeStr: new Date().toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}),
             last_message:text,
         }
+        
+        console.log(chat);
 
         fetch(apiUrl+"AppUser/Chats/",
             {

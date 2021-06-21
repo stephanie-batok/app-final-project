@@ -161,20 +161,13 @@ export default function HomePage({route}) {
     },[lessons]);
 
     const register = () => {
-        auth.createUserWithEmailAndPassword(email, id)
-        .then((userCredential) => {
-            // Signed in
-            var user = userCredential.user;
-            user.updateProfile({
-                displayName: 'user',
-                photoURL:"https://www.trackergps.com/canvas/images/icons/avatar.jpg"
-            }).catch(function (error) {
-            alert(error.message)
-            });
-        })
-        .catch((error) => {
-            var errorMessage = error.message;
-            alert(errorMessage);
+        auth.onAuthStateChanged((user)=>{
+            if (user) {
+              auth.signInWithEmailAndPassword(user.email,id);
+
+            } else {
+            //   auth.createUserWithEmailAndPassword(email,id);
+            }
         });
     }
 
@@ -230,13 +223,12 @@ export default function HomePage({route}) {
     
     return (
         <View style={styles.container}>
-            <Text>home page</Text>
-            <Agenda
+            {items!==""?<Agenda
                 items={items}
                 renderItem={(item) => renderItem(item)}
                 renderEmptyDate={() => renderEmptyDate()}
                 hideKnob={true}
-            />
+            />:null}
         </View>
     )
 }

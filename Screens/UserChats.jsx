@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { Text, FlatList,TouchableOpacity,View,StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Container, Header, Content, ListItem, Left, Right, Thumbnail,Body,Icon } from 'native-base';
+import { useFocusEffect } from '@react-navigation/native';
+import {ListItem, Right, Body, Icon} from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiUrl from '../global';
 
 
 export default function UserChats({navigation}) {
-    const [chats,setChats] = useState("");
+    const [chats,setChats] = useState([]);
     const [my_id,setMy_Id] = useState("");
 
 
@@ -17,73 +18,79 @@ export default function UserChats({navigation}) {
         });
     },[]);
 
-    useEffect(() => {
-        if(my_id!==""){
-            fetch(apiUrl+"AppUser/Chats/"+my_id,
-                {
-                    method: 'GET',
-                    headers: new Headers({
-                    'Content-Type': 'application/json; charset=UTF-8',
-                    'Accept': 'application/json; charset=UTF-8',
+    useFocusEffect(
+        React.useCallback(() => {
+            let isActive = true;
+
+            if(my_id!=="" && isActive){
+                fetch(apiUrl+"AppUser/Chats/"+my_id,
+                    {
+                        method: 'GET',
+                        headers: new Headers({
+                        'Content-Type': 'application/json; charset=UTF-8',
+                        'Accept': 'application/json; charset=UTF-8',
+                        })
                     })
-                })
-                .then(res => {
-                    return res.json();
-                })
-                .then((result) => {
-                    
-                    if(result.length!==0){
-                        console.log(result);
-                        setChats(result);
+                    .then(res => {
+                        return res.json();
+                    })
+                    .then((result) => {
+                        
+                        if(result.length!==0){
+                            console.log(result);
+                            setChats(result);
+                        }
+                        },
+                        (error) => {
+                        alert(error);
                     }
-                    },
-                    (error) => {
-                    alert(error);
-                }
-            );
-        }
-    }, [my_id]);
+                );
+            }
+
+            return () => {
+                isActive = false;
+            };
+
+        }, [my_id])
+    );
 
     renderItem = ({ item }) => {
-        // let dateTime = Date.parse(item.dateTime);
-        // let today = new Date();
-        // if(dateTime.getDate()===today.getDate()&&dateTime.getMonth()===today.getMonth()&&dateTime.getFullYear()===today.getFullYear()){
-        //     dateTime = dateTime.getHours() + ':' + dateTime.getMinutes();
-        // }
-        // else {
-        //     dateTime = new Date(dateTime.getFullYear(),dateTime.getMonth(),dateTime.getDate());
-        // }
+        let day = new Date().getDate();
+        let month = new Date().getMonth();
+        let year = new Date().getFullYear();
+        let date = day + "." + (month+1) + "." + year;
+
+        if(date===item.dateStr){
+            dateTime = item.timeStr;
+        }
+        else {
+            dateTime = item.dateStr;
+        }
 
         if (item.user_id1===my_id) {
           return (
-                <ListItem onPress={go2Chat(item.user_id2,item.chat_num)} >
+                <ListItem  IconRight onPress={go2Chat(item.user_id2,item.chat_num)} >
+                    <Icon name="md-person-circle" style={{fontSize: 45}} />
+                    <Body style={{alignItems:'flex-start'}}>
+                        <Text style={{fontSize: 15,fontWeight:'bold'}} >{item.user_name2}</Text>
+                        <Text>{item.last_message}</Text>
+                    </Body>
                     <Right>
-                        <Icon name="md-person-circle" style={{fontSize: 45}} />
+                        <Text>{dateTime}</Text>
                     </Right>
-                        <Body style={{alignItems:'flex-start'}}>
-                            <Text style={{fontSize: 15,fontWeight:'bold'}} >{item.user_name2}</Text>
-                            <Text note>{item.last_message}</Text>
-                        </Body>
-                    <Left>
-                        <Text>{item.dateTime}</Text>
-                        <Text>{"     "}</Text>
-                    </Left>
                 </ListItem>
           );
         } else {
           return (
-                <ListItem onPress={go2Chat(item.user_id1,item.chat_num)} >
-                    <Right>
-                        <Icon name="md-person-circle" style={{fontSize: 45}} />
-                    </Right>
+                <ListItem IconRight onPress={go2Chat(item.user_id1,item.chat_num)} >
+                    <Icon name="md-person-circle" style={{fontSize: 45}} />
                     <Body style={{alignItems:'flex-start'}} >
                         <Text style={{fontSize: 15,fontWeight:'bold'}}>{item.user_name1}</Text>
-                        <Text note>{item.last_message}</Text>
+                        <Text>{item.last_message}</Text>
                     </Body>
-                    <Left>
-                        <Text>{item.dateTime}</Text>
-                        <Text>{"     "}</Text>
-                    </Left>
+                    <Right>
+                        <Text>{dateTime}</Text>
+                    </Right>
                 </ListItem>
           );
         }
@@ -97,20 +104,13 @@ export default function UserChats({navigation}) {
         });
     }
 
-    const addNewChat = () =>{
-        navigation.navigate('ContactList',{
-            my_id:my_id,
-        });
-    }
-
     return (
         <>
-            <FlatList
+            {chats.length>0?<FlatList
                 data={chats}
                 renderItem={this.renderItem}
                 keyExtractor={item => item.chat_num.toString()}
-            />
-            <Ionicons onPress={addNewChat} name="add-circle-outline"/>
+            />:null}
         </>
     )
 }
