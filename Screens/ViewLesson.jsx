@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text,TouchableOpacity,View,StyleSheet} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Form, Item, Input, Label,Icon } from 'native-base';
-import {Card, CardItem, Body} from 'native-base';
+import { Form, Item, Icon } from 'native-base';
 import apiUrl from '../global';
 
 
@@ -15,6 +14,7 @@ export default function ViewLesson({route,navigation}) {
 
     
     useEffect(() => {
+        
         fetch(apiUrl+"AppUser/Lesson/"+id+"/"+lesson_id,
             {
                 method: 'GET',
@@ -39,54 +39,56 @@ export default function ViewLesson({route,navigation}) {
     },[]);
 
     useEffect(() => {
-        if(lesson!=="" && user_type==="rider"){
-            fetch(apiUrl+"Lesson/RiderFeedback/"+lesson_id,
-            {
-                method: 'GET',
-                headers: new Headers({
-                'Content-Type': 'application/json; charset=UTF-8',
-                'Accept': 'application/json; charset=UTF-8',
+        if(lesson!==""){
+            if(user_type==="rider"){
+                fetch(apiUrl+"Lesson/RiderFeedback/"+lesson_id,
+                {
+                    method: 'GET',
+                    headers: new Headers({
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    'Accept': 'application/json; charset=UTF-8',
+                    })
                 })
-            })
-            .then(res => {
-                return res.json();
-            })
-            .then((result) => {
-                if(result===null){
-                    setRiderFeedbackExists(false);
-                } else {
-                    setRiderFeedbackExists(true);
+                .then(res => {
+                    return res.json();
+                })
+                .then((result) => {
+                    if(result===null){
+                        setRiderFeedbackExists(false);
+                    } else {
+                        setRiderFeedbackExists(true);
+                    }
+                    },
+                    (error) => {
+                    console.log(error);
                 }
-                },
-                (error) => {
-                console.log(error);
+            );
+            } 
+            else {
+                fetch(apiUrl+"Lesson/InstructorFeedback/"+lesson_id,
+                    {
+                        method: 'GET',
+                        headers: new Headers({
+                        'Content-Type': 'application/json; charset=UTF-8',
+                        'Accept': 'application/json; charset=UTF-8',
+                        })
+                    })
+                    .then(res => {
+                        return res.json();
+                    })
+                    .then((result) => {
+                        if(result===null){
+                            setInstructorFeedbackExists(false);
+                        } else {
+                            setInstructorFeedbackExists(true);
+                        }
+                        },
+                        (error) => {
+                        console.log(error);
+                    }
+                );
             }
-        );
-        
-        if(lesson!=="" && user_type==="instructor"){
-            fetch(apiUrl+"Lesson/InstructorFeedback/"+lesson_id,
-            {
-                method: 'GET',
-                headers: new Headers({
-                'Content-Type': 'application/json; charset=UTF-8',
-                'Accept': 'application/json; charset=UTF-8',
-                })
-            })
-            .then(res => {
-                return res.json();
-            })
-            .then((result) => {
-                if(result===null){
-                    setInstructorFeedbackExists(false);
-                } else {
-                    setInstructorFeedbackExists(true);
-                }
-                },
-                (error) => {
-                console.log(error);
-            });
         }
-    }
     },[lesson]);
 
     useEffect(() => {
@@ -120,17 +122,15 @@ export default function ViewLesson({route,navigation}) {
     return (
         <View style={styles.container}>
             <View style={{paddingRight:10, backgroundColor:"#f3f3f4"}}>
-                {showFeedbackBtn&&
-                (user_type==="rider"?
+                {showFeedbackBtn && user_type==="rider"?
                 <TouchableOpacity style={styles.btn} onPress={() => goToRiderFeedback()}>
                     <Text><Ionicons name='md-document-text-outline' size={16}/>
                     {" "}משוב</Text>
-                </TouchableOpacity>
-                :
-                <TouchableOpacity style={styles.btn} onPress={() => goToInstructorFeedback()}>
+                </TouchableOpacity>:null}
+                {showFeedbackBtn && user_type==="instructor"?<TouchableOpacity style={styles.btn} onPress={() => goToInstructorFeedback()}>
                 <Text><Ionicons name='md-document-text-outline' size={16}/>
                 {" "}משוב</Text>
-                </TouchableOpacity>)}
+                </TouchableOpacity>:null}
             </View>
             <Form>
                 {user_type==="rider"?

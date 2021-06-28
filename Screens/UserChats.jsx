@@ -2,7 +2,7 @@ import React, { useState, useEffect} from 'react';
 import { Text, FlatList,TouchableOpacity,View,StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import {ListItem, Right,Left, Body, Icon,Thumbnail,Separator } from 'native-base';
+import {ListItem, Right,Left, Body, Icon,Thumbnail } from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiUrl, {uplodedPicPath} from '../global';
 
@@ -72,7 +72,7 @@ export default function UserChats({navigation}) {
             <>
                 <ListItem thumbnail onPress={go2Chat(item.user_id2,item.chat_num)} >
                     <Left>
-                        <Thumbnail source={{ uri: uplodedPicPath+item.user_profile2 }} />
+                        <Thumbnail style={{width: 45, height: 45}} source={{ uri: uplodedPicPath+item.user_profile2 }} />
                     </Left>
                     <Body style={{alignItems:'flex-start'}}>
                         <Text style={{fontSize: 15,fontWeight:'bold'}} >{item.user_name2}</Text>
@@ -89,7 +89,7 @@ export default function UserChats({navigation}) {
             <>
                 <ListItem thumbnail onPress={go2Chat(item.user_id1,item.chat_num)} >
                     <Left>
-                        <Thumbnail source={{ uri: uplodedPicPath+item.user_profile1 }} />
+                        <Thumbnail style={{width: 45, height: 45}} source={{ uri: uplodedPicPath+item.user_profile1 }} />
                     </Left>
                     <Body style={{alignItems:'flex-start'}} >
                         <Text style={{fontSize: 15,fontWeight:'bold'}}>{item.user_name1}</Text>

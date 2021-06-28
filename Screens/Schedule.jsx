@@ -139,6 +139,18 @@ export default function Schedule({navigation}) {
         );
     }
 
+    const renderEmptyDate = () => {
+        return (
+              <Card style={styles.item}>
+                  <CardItem>
+                          <Body>
+                              <Text>לא נמצאו שיעורים להיום :)</Text>
+                          </Body>
+                  </CardItem>
+              </Card>
+        );
+    }
+
     const openViewLesson=(lesson_id)=>{
         navigation.navigate('ViewLesson',{
             id:id,
@@ -152,6 +164,7 @@ export default function Schedule({navigation}) {
             {items!==""?<Agenda
                 items={items}
                 renderItem={(item) => renderItem(item)}
+                renderEmptyDate={() => renderEmptyDate()}
             />:null}
         </View>
     )
