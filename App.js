@@ -18,6 +18,7 @@ import UserChats from './Screens/UserChats';
 import ContactList from './Screens/ContactList';
 import Profile from './Screens/Profile';
 import RiderFeedback from './Screens/RiderFeedback';
+import InstructorFeedback from './Screens/InstructorFeedback';
 
 
 const Stack = createStackNavigator();
@@ -80,6 +81,7 @@ export default class App extends Component {
                 <Stack.Screen name="ContactList" options={{headerTitle:"אנשי קשר"}} component={ContactList}/>
                 <Stack.Screen name="Profile" options={{headerTitle:"פרופיל אישי"}} component={Profile}/>
                 <Stack.Screen name="RiderFeedback" options={{headerTitle:"משוב שיעור"}} component={RiderFeedback}/>
+                <Stack.Screen name="InstructorFeedback" options={{headerTitle:"משוב שיעור"}} component={InstructorFeedback}/>
             </Stack.Navigator>
           </NavigationContainer>
     )

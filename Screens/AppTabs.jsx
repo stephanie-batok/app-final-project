@@ -33,7 +33,7 @@ export default function AppTabs() {
                 },
             })}
             tabBarOptions={{
-                activeTintColor: 'blue',
+                activeTintColor: '#00adf5',
                 inactiveTintColor: 'gray',
             }}
         >

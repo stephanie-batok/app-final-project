@@ -1,52 +1,22 @@
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default async function registerForPushNotificationsAsync() {
-    const { status: existingStatus } = await Permissions.getAsync(
-        Permissions.NOTIFICATIONS
-    );
-    let finalStatus = existingStatus;
-
-    // only ask if permissions have not already been determined, because
-    // iOS won't necessarily prompt the user a second time.
-    if (existingStatus !== 'granted') {
-        // Android remote notification permissions are granted during the app
-        // install, so this will only ask on iOS
-        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-        finalStatus = status;
+        
+    const {status} = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    if (status != 'granted') {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+       finalStatus = status;
+    }
+    if (status !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
     }
 
-    // Stop here if the user did not grant permissions
-    if (finalStatus !== 'granted') {
-        return;
-    }
-
-    let id = await AsyncStorage.getItem('@id');
     // Get the token that uniquely identifies this device
     let token = await Notifications.getExpoPushTokenAsync();
-    console.log(token);
-    console.log(id);
-    console.log(finalStatus);
-    //alert(token);
 
-    // fetch(PUSH_ENDPOINT, {
-    //     method: 'POST',
-    //     headers: {
-    //         Accept: 'application/json',
-    //         'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //         token: {
-    //             value: token,
-    //         },
-    //         user: {
-    //             username: 'Brent',
-    //         },
-    //     }),
-    // })
-    // POST the token to your backend server from where you can retrieve it to send push notifications.
     return (
         token.data
     );

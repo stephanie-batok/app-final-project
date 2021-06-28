@@ -90,7 +90,7 @@ export default function Chat({route,navigation}) {
                 console.log(result);
                 },
                 (error) => {
-                alert(error);
+                console.log(error);
             }
         );
     }, []);

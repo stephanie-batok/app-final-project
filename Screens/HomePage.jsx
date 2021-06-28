@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState,useRef, useEffect } from 'react';
 import { Text,TouchableOpacity,View,StyleSheet} from 'react-native';
 import {Card, CardItem, Body} from 'native-base';
 import {Agenda} from 'react-native-calendars';
@@ -9,12 +9,12 @@ import {auth} from '../fireB';
 import apiUrl from '../global';
 
 
-export default function HomePage({route}) {
-    const [notification,setNotification] = useState();
+export default function HomePage({route,navigation}) {
+    const [notification,setNotification] = useState("");
+    const notificationListener = useRef();
     const [token, setToken] = useState("");
     const [id, setId] = useState("");
     const [email, setEmail] = useState("");
-
     const [lessons,setLessons] = useState([]);
     const [items,setItems] = useState("");
     const [user_type,setUser_type] = useState("");
@@ -31,16 +31,13 @@ export default function HomePage({route}) {
                 });
                 await AsyncStorage.getItem("@email",(err,result)=>{
                     return result !== null ? setEmail(JSON.parse(result)) : null;
-                });
-                
+                });                
             });
-
-        // Handle notifications that are received or selected while the app
-        // is open. If the app was closed and then opened by tapping the
-        // notification (rather than just tapping the app icon to open it),
-        // this function will fire on the next tick after the app starts
-        // with the notification data.
-        this._notificationSubscription = Notifications.addNotificationReceivedListener(_handleNotification);
+        
+        notificationListener.current=Notifications.addNotificationReceivedListener(notification => {
+            console.log(JSON.stringify(notification.request.content.data));
+            setNotification(notification.request.content.data);
+        });
     },[]);
 
     useEffect(() => {
@@ -62,7 +59,6 @@ export default function HomePage({route}) {
                 .then((result) => {
                     if(result.length!==0){
                         setLessons(result);
-                        console.log(result);
                     }
                     },
                     (error) => {
@@ -99,7 +95,6 @@ export default function HomePage({route}) {
     },[email]);
 
     useEffect(()=>{
-        
         let userType="";
         lessons.map((lesson)=>{
             if(lesson.rider_id===id){
@@ -166,23 +161,35 @@ export default function HomePage({route}) {
               auth.signInWithEmailAndPassword(user.email,id);
 
             } else {
-            //   auth.createUserWithEmailAndPassword(email,id);
+              auth.createUserWithEmailAndPassword(email,id)
+              .then(() => {
+                console.log('User account created & signed in!');
+              })
+              .catch(error => {
+                if (error.code === 'auth/email-already-in-use')
+                  auth.signInWithEmailAndPassword(email,id);
+            
+                if (error.code === 'auth/invalid-email') 
+                  console.log('That email address is invalid!');
+                
+                console.log(error);
+              });
             }
         });
     }
-
-    const _handleNotification = (notification) => {
-        setNotification(notification.data);
-        console.log(notification.data);
         
-        if(notification.data.action==="chat"){
-            navigation.navigate('Chat',{
-                SendToId:notification.data.from_id,
-                my_id:id,
-                chat_num:notification.data.chat_num
-            });
-        }
-    };
+    useEffect(() => {
+        if(notification!==""){
+            console.log(notification);
+            if(notification.action==="chat"){
+                navigation.navigate('Chat',{
+                    SendToId:notification.from_id,
+                    my_id:id,
+                    chat_num:notification.chat_num
+                });
+            }
+        }        
+    }, [notification]);
 
     const renderItem = (item)=> {
         return (

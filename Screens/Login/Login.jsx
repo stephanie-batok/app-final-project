@@ -68,6 +68,7 @@ export default function Login({navigation}) {
             })
             .then((result) => {
                 storeData('id', result.id);
+                storeData('profileImg', result.profileImg);
                 storeData('user', result);
                 setId(result);
                 console.log(result);

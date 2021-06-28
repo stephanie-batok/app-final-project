@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Text,TouchableOpacity,View,StyleSheet,FlatList} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ListItem} from 'native-base';
-import apiUrl from '../global';
+import {ListItem,Thumbnail,Body,Left,Right} from 'native-base';
+import apiUrl,{uplodedPicPath} from '../global';
 
 
 export default function ContactList({navigation}) {
@@ -37,7 +37,7 @@ export default function ContactList({navigation}) {
                         setContacts(temp);
                     },
                     (error) => {
-                    alert(error);
+                    console.log(error);
                 }
             );
         }
@@ -45,8 +45,14 @@ export default function ContactList({navigation}) {
 
     renderItem = ({ item }) => {
         return (
-                <ListItem onPress={go2Chat(item.id)}>
-                    <Text>{item.first_name+" "+item.last_name}</Text>
+                <ListItem thumbnail onPress={go2Chat(item.id)}>
+                    <Left>
+                        <Thumbnail style={{width: 35, height: 35}} source={{ uri: uplodedPicPath+item.profileImg }} />
+                    </Left>
+                    <Body style={{alignItems:'flex-start'}}>
+                        <Text>{item.first_name+" "+item.last_name}</Text>
+                    </Body>
+                    <Right></Right>
                 </ListItem>
         );
     };
