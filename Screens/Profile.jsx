@@ -78,20 +78,20 @@ export default function Profile({navigation}) {
           profilePassword = newPassword;
         }
   
-        let profile = {
+        let new_profile = {
           "phone_number":phone_number,
           "email": email,
           "password":profilePassword,
           "profileImg": photoPath
         };
 
-        console.log(profile);
+        console.log(new_profile);
         console.log(id);
         
         fetch("http://proj.ruppin.ac.il/bgroup19/prod/api/Profile/"+id,
           {
               method: 'PUT',
-              body: JSON.stringify(profile),
+              body: JSON.stringify(new_profile),
               headers: new Headers({
               'Content-Type': 'application/json; charset=UTF-8',
               'Accept': 'application/json; charset=UTF-8',

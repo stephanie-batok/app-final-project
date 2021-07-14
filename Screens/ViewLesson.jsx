@@ -40,6 +40,8 @@ export default function ViewLesson({route,navigation}) {
 
     useEffect(() => {
         if(lesson!==""){
+            let err="";
+
             if(user_type==="rider"){
                 fetch(apiUrl+"Lesson/RiderFeedback/"+lesson_id,
                 {
@@ -50,10 +52,13 @@ export default function ViewLesson({route,navigation}) {
                     })
                 })
                 .then(res => {
+                    if(res.status!==200){
+                        err = true;
+                    }
                     return res.json();
                 })
                 .then((result) => {
-                    if(result===null){
+                    if(err){
                         setRiderFeedbackExists(false);
                     } else {
                         setRiderFeedbackExists(true);
@@ -74,10 +79,13 @@ export default function ViewLesson({route,navigation}) {
                         })
                     })
                     .then(res => {
+                        if(res.status!==200){
+                            err = true;
+                        }
                         return res.json();
                     })
                     .then((result) => {
-                        if(result===null){
+                        if(err){
                             setInstructorFeedbackExists(false);
                         } else {
                             setInstructorFeedbackExists(true);

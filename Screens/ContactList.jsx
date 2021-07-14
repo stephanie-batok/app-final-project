@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text,TouchableOpacity,View,StyleSheet,FlatList} from 'react-native';
+import { Text,FlatList} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ListItem,Thumbnail,Body,Left,Right} from 'native-base';
 import apiUrl,{uplodedPicPath} from '../global';

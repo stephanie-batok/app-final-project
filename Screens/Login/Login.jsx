@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Text,TouchableOpacity,View, Image,KeyboardAvoidingView} from 'react-native';
+import { Text,TouchableOpacity,View, Image,KeyboardAvoidingView,Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Item, Label,CheckBox,Input, Form, ListItem} from 'native-base';
 import styles from './style'
 import apiUrl from '../../global';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import logo from '../../horse-club-logo.png';
+import logo from '../../newLogo.png';
 
 
 export default function Login({navigation}) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [id, setId] = useState("");
+    const [login, setLogin] = useState("");
     const [allowd,setAllowd]= useState(false);
     const [rememberMe,setRememberMe]= useState(false);
     const [checked, setChecked] = useState(false);
@@ -38,14 +38,19 @@ export default function Login({navigation}) {
     useEffect(() => {
         if(allowd){
             navigation.navigate('HomePage');
+            setLogin("");
             setAllowd(false);
         }
-    },[id]);
+    },[login]);
 
     const btn_LogIn = () => {
         
-        console.log(password+" "+email);
+        if(email.trim()===""|| password.trim()===""){
+            Alert.alert("אופס!","יש להזין דואר אלקטרוני וסיסמה.",);
+            return;
+        }
 
+        let err = "";
         fetch(apiUrl+"AppUser/"+email+"/"+password,
             {
               method: 'GET',
@@ -64,19 +69,27 @@ export default function Login({navigation}) {
                     setAllowd(true);
                     storeData('email',email);
                 }
+                else{
+                    err = true;
+                }
                 return res.json();
             })
             .then((result) => {
-                storeData('id', result.id);
-                storeData('profileImg', result.profileImg);
-                storeData('user', result);
-                setId(result);
-                console.log(result);
+                if(err){
+                    Alert.alert("אופס!",result);
+                }
+                else{
+                    storeData('id', result.id);
+                    storeData('profileImg', result.profileImg);
+                    storeData('user', result);
+                    console.log(result);
+                }
               },
               (error) => {
-                console.log(error);
-            }
-        );
+                alert(error);
+            }).then(()=>{
+               setLogin(true);
+            });
     }
 
     const storeData = async(storage_Key,value) => {

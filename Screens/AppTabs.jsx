@@ -9,7 +9,6 @@ import Notifications from './Notifications';
 import UserChats from './UserChats';
 
 
-const apiUrl="http://proj.ruppin.ac.il/bgroup19/prod/api/";
 const Tab = createBottomTabNavigator();
 
 

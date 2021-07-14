@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
-import { Text,TouchableOpacity,View,StyleSheet} from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat ,Bubble } from 'react-native-gifted-chat';
 import {db, auth} from '../fireB';
 import apiUrl from '../global';
 
@@ -12,6 +11,7 @@ export default function Chat({route,navigation}) {
 
 
     useLayoutEffect(() => {
+        console.log(chat_num);
         const unsubscribe = db.collection('chat_'+chat_num)
                             .orderBy('createdAt', 'desc')
                             .onSnapshot(snapshot => setMessages(
@@ -70,6 +70,7 @@ export default function Chat({route,navigation}) {
             dateStr: new Date().toLocaleDateString(),
             timeStr: new Date().toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}),
             last_message:text,
+            last_message_sent_by:my_id
         }
         
         console.log(chat);
@@ -96,7 +97,7 @@ export default function Chat({route,navigation}) {
     }, []);
 
     useEffect(() => {
-        
+        console.log(auth.currentUser.displayName);
         if(sendToToken!==""){
             let pnd = {
                 to: sendToToken,
@@ -128,16 +129,33 @@ export default function Chat({route,navigation}) {
         }
     },[sendToToken]);
 
+    const renderBubble = (props) => {
+        return (
+          <Bubble
+            {...props}
+            wrapperStyle={{
+              right: {
+                backgroundColor: "#87bd5b",
+              },
+              left: {
+                backgroundColor: "#c3e2e8f2"
+              }
+            }}
+          />
+        )
+      }
+
 
     return (
            <GiftedChat
                 messages={messages}
                 showAvatarForEveryMessage={true}
+                renderBubble={renderBubble}
                 onSend={newMessage => onSend(newMessage)}
                 user={{
-                    _id: auth?.currentUser?.email,
-                    name: auth?.currentUser?.displayName,
-                    avatar: auth?.currentUser?.photoURL
+                    _id: auth.currentUser.email,
+                    name: auth.currentUser.displayName,
+                    avatar: auth.currentUser.photoURL
                 }}
             />
     )

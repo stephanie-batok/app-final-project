@@ -10,25 +10,27 @@ export default StyleSheet.create({
     },
     logo:{
         flex:1,
-        width:"40%",
-        height:"40%",
+        marginTop:20,
+        width:"50%",
+        height:"50%",
         resizeMode:"contain",
         alignSelf:"center",
     },
     form:{
         flex:1,
+        marginBottom:10,
         justifyContent:"center",
         width:"80%",
     },
     loginBtn:{
         width:"60%",
-        backgroundColor:"#428af8",
+        backgroundColor:"#5a83b7",
         alignSelf:"center",
         alignItems:"center",
         justifyContent:"center",
         borderRadius:25,
         height:50,
-        marginTop:40,
+        marginTop:25,
         marginBottom:10
     },
     loginText:{

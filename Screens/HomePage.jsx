@@ -1,5 +1,6 @@
 import React, { useState,useRef, useEffect } from 'react';
 import { Text,TouchableOpacity,View,StyleSheet} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Card, CardItem, Body} from 'native-base';
 import {Agenda} from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,9 +12,9 @@ import apiUrl, { uplodedPicPath } from '../global';
 
 export default function HomePage({route,navigation}) {
     const [notification,setNotification] = useState("");
+    const [lastMessage,setLastMessage] = useState(false);
+    const [lastNotification,setLastNotification] = useState(false);
     const notificationListener = useRef();
-    const [todayLesson,setTodayLesson] = useState(false);
-    const [lesson_id,setLesson_id] = useState("");
     const [token, setToken] = useState("");
     const [id, setId] = useState("");
     const [email, setEmail] = useState("");
@@ -28,14 +29,14 @@ export default function HomePage({route,navigation}) {
                 AsyncStorage.setItem(`@token`,JSON.stringify(tok));
                 setToken(tok);
 
+                await AsyncStorage.getItem("@user",(err,result)=>{
+                    return result !== null ? setUser(JSON.parse(result)) : null;
+                });
                 await AsyncStorage.getItem("@id",(err,result)=>{
                     return result !== null ? setId(JSON.parse(result)) : null;
                 });
                 await AsyncStorage.getItem("@email",(err,result)=>{
                     return result !== null ? setEmail(JSON.parse(result)) : null;
-                });
-                await AsyncStorage.getItem("@user",(err,result)=>{
-                    return result !== null ? setUser(JSON.parse(result)) : null;
                 });
             });
         
@@ -45,91 +46,6 @@ export default function HomePage({route,navigation}) {
         });
     },[]);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if(todayLesson){
-                let now = new Date();
-                let notificatioTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 19, 0, 0);
-                console.log(now.toString());
-                console.log(notificatioTime.toString());
-
-                if(now.toString()===notificatioTime.toString()){
-
-                    let pnd = {
-                        to: token,
-                        title: 'מועדון רכיבה רעננה',
-                        body: "התקבלה התראה חדשה",
-                        badge: 4,
-                        data: { chat_num:0, from_id:"",action:"notification" }
-                    };
-
-                    fetch(apiUrl+"AppUser/PushNotification",
-                        {
-                            method: 'POST',
-                            body: JSON.stringify(pnd),
-                            headers: new Headers({
-                            'Content-Type': 'application/json; charset=UTF-8',
-                            'Accept': 'application/json; charset=UTF-8',
-                            })
-                        })
-                        .then(res => {
-                            return res.json();
-                        })
-                        .then((result) => {
-                            console.log(result);
-                            },
-                            (error) => {
-                            console.log(error);
-                        }
-                    );
-
-                    let not = "";
-                    if(user.user_type==="rider"){
-                        not = {
-                            user_id:id,
-                            title:"מילוי משוב",
-                            text:"לא לשכוח למלא משוב לגבי השיעור שהיה היום :)",
-                            dateStr: now.toLocaleDateString(),
-                            timeStr: now.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}),
-                            lesson_id:lesson_id
-                        }
-                    }
-                    else {
-                        not = {
-                            user_id:id,
-                            title:"מילוי משובים",
-                            text:"לא לשכוח למלא משוב לשיעורים שהיו היום :)",
-                            dateStr: now.toLocaleDateString(),
-                            timeStr: now.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}),
-                            lesson_id:lesson_id
-                        }
-                    }
-
-                    fetch(apiUrl+"AppUser/Notifications/",
-                        {
-                            method: 'POST',
-                            body: JSON.stringify(not),
-                            headers: new Headers({
-                            'Content-Type': 'application/json; charset=UTF-8',
-                            'Accept': 'application/json; charset=UTF-8',
-                            })
-                        })
-                        .then(res => {
-                            return res.json();
-                        })
-                        .then((result) => {
-                            console.log(result);
-                            },
-                            (error) => {
-                            console.log(error);
-                        }
-                    );
-                }
-            }
-        }, 1000);
-
-        return () => clearInterval(interval);
-    },[]);
 
     useEffect(() => {
         if(id!==""){
@@ -154,6 +70,44 @@ export default function HomePage({route,navigation}) {
                     },
                     (error) => {
                     alert(error);
+                }
+            );
+
+            fetch(apiUrl+"Profile/Message/"+id,
+                {
+                    method: 'GET',
+                    headers: new Headers({
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    'Accept': 'application/json; charset=UTF-8',
+                    })
+                })
+                .then(res => {
+                    return res.json();
+                })
+                .then((result) => {
+                    setLastMessage(result);
+                    },
+                    (error) => {
+                    console.log(error);
+                }
+            );
+            
+            fetch(apiUrl+"Profile/Notifications/"+id,
+                {
+                    method: 'GET',
+                    headers: new Headers({
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    'Accept': 'application/json; charset=UTF-8',
+                    })
+                })
+                .then(res => {
+                    return res.json();
+                })
+                .then((result) => {
+                    setLastNotification(result);
+                    },
+                    (error) => {
+                    console.log(error);
                 }
             );
         }
@@ -181,7 +135,6 @@ export default function HomePage({route,navigation}) {
                     console.log(error);
                 }
             );  
-            register();          
         }
     },[email]);
 
@@ -191,15 +144,7 @@ export default function HomePage({route,navigation}) {
         let todayy = new Date();
 
         if(user.user_type==="rider"){
-            lessons.map((lesson)=>{
-                let lesson_date = new Date(lesson.date);
-                let myToday = new Date(todayy.getFullYear(), todayy.getMonth(), todayy.getDate(), lesson_date.getHours(), lesson_date.getMinutes(), lesson_date.getSeconds());
-
-                if(myToday.toString()===lesson_date.toString()){
-                    setTodayLesson(true);
-                    setLesson_id(lesson.lesson_id);
-                }
-                
+            lessons.map((lesson)=>{                
                 dates[lesson.date]=[{
                     "name":lesson.instructor_fullName,
                     "time":lesson.start_time+" - "+lesson.end_time,
@@ -244,30 +189,37 @@ export default function HomePage({route,navigation}) {
 
     },[lessons]);
 
-    const register = () => {
-
-        auth.createUserWithEmailAndPassword(email,id)
-        .then(() => {
-            console.log('User account created & signed in!');
-        })
-        .catch(error => {
-            if (error.code === 'auth/email-already-in-use')
-                auth.signInWithEmailAndPassword(email,id);
-
-        }).then(()=>{
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    user.updateProfile({
-                        displayName: user.first_name +" "+user.last_name ,
+    useEffect(() => {
+        if(user!==""){
+            auth.createUserWithEmailAndPassword(user.email,user.id)
+            .then(() => {
+                console.log('User account created & signed in!');
+                auth.currentUser.updateProfile(
+                    {
+                        displayName: user.first_name +" "+user.last_name,
                         photoURL: uplodedPicPath + user.profileImg
+                    }
+                )
+                console.log(auth.currentUser);
+            })
+            .catch(error => {
+                if (error.code === 'auth/email-already-in-use'){
+                    auth.signInWithEmailAndPassword(user.email,user.id)
+                    .then(()=>{
+                        auth.currentUser.updateProfile(
+                            {
+                                displayName: user.first_name +" "+user.last_name,
+                                photoURL: uplodedPicPath + user.profileImg
+                            }
+                        )
+                    }).then(()=>{
+                        console.log(auth.currentUser);
                     });
-                } else {
-                    console.log('not login');
                 }
             });
-        });
-    }
-        
+        }
+    }, [user]);
+
     useEffect(() => {
         if(notification!==""){
             console.log(notification);
@@ -325,12 +277,52 @@ export default function HomePage({route,navigation}) {
     
     return (
         <View style={styles.container}>
-            {items!==""?<Agenda
-                items={items}
-                renderItem={(item) => renderItem(item)}
-                renderEmptyDate={() => renderEmptyDate()}
-                hideKnob={true}
-            />:null}
+            <View style={styles.topView}>
+                <TouchableOpacity onPress={()=> navigation.navigate('UserChats')}>
+                    <Card style={styles.cards}>
+                        <CardItem>
+                            <Ionicons name="mail-outline" size={22} />
+                        </CardItem>
+                        <CardItem>
+                            <Text style={styles.titleText}>הודעה אחרונה</Text>
+                        </CardItem>
+                        <CardItem cardBody>
+                            <Text style={styles.titleText}>{lastMessage && (lastMessage.user_id1===id?lastMessage.user_name2:lastMessage.user_name1)+":  "} </Text>
+                        </CardItem>
+                        <CardItem cardBody>
+                            <Text numberOfLines={1} style={styles.cardText}>{lastMessage && lastMessage.last_message}</Text>
+                        </CardItem>
+                    </Card>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=> navigation.navigate('Notifications')}>
+                    <Card style={styles.cards}>
+                        <CardItem>
+                            <Ionicons name="notifications-outline" size={22} />
+                        </CardItem>
+                        <CardItem>
+                            <Text style={styles.titleText}>התראה אחרונה</Text>
+                        </CardItem>
+                        <CardItem cardBody>
+                            <Text style={styles.cardText}>{lastNotification && lastNotification.text}</Text>
+                        </CardItem>
+                    </Card>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.bottomView}>
+                <View style={styles.nestedBottomView}>
+                    <Ionicons name="calendar-sharp" size={22} />
+                    <Text style={styles.titleText}>
+                        יומן שבועי 
+                    </Text>
+                </View>
+                {items!==""?
+                <Agenda
+                    items={items}
+                    renderItem={(item) => renderItem(item)}
+                    renderEmptyDate={() => renderEmptyDate()}
+                    hideKnob={true}
+                />:null}
+            </View>
         </View>
     )
 }
@@ -338,6 +330,7 @@ export default function HomePage({route,navigation}) {
 const styles = StyleSheet.create({
     container:{
         flex:1,
+        display:"flex",
         backgroundColor:"white"   
     },
     item: {
@@ -347,6 +340,38 @@ const styles = StyleSheet.create({
         padding: 10,
         marginRight: 10,
         marginTop: 17
+    },
+    topView:{
+        display:"flex",
+        width: '100%',
+        flexDirection:"row",
+        justifyContent:"center",
+        marginTop:60
+    },
+    cards:{
+        width:140,
+        height:140,
+        marginRight:15,
+        marginLeft:15,
+        padding:10,
+        alignItems:"center",
+    },
+    cardText:{
+        fontSize:12
+    },
+    bottomView:{
+        flex:1,
+        marginTop:80,
+    },
+    nestedBottomView:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingTop:10,
+        alignSelf:"center",
+    },
+    titleText:{
+        fontWeight:"bold",
+        fontSize:13
     }
 })
 

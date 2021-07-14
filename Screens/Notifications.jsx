@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, FlatList,TouchableOpacity,View,StyleSheet} from 'react-native';
+import { Text, FlatList} from 'react-native';
 import {ListItem, Right,Left, Body, Icon } from 'native-base';
 import apiUrl from '../global';
 
@@ -61,10 +61,10 @@ export default function Notifications({navigation}) {
             <ListItem onPress={go2Schedule(item.lesson_id)}>
                 <Body style={{alignItems:'flex-start',borderColor:"transparent"}}>
                     <Text style={{fontSize: 15,fontWeight:'bold',paddingBottom:10}} >{item.title}</Text>
-                    <Text note>{item.text}</Text>
+                    <Text style={{fontSize: 13}} note>{item.text}</Text>
                 </Body>
-                <Right>
-                    <Text note>{dateTime}</Text>
+                <Right style={{borderColor:"transparent"}}>
+                    <Text style={{fontSize: 11,borderColor:"transparent"}}>{dateTime}</Text>
                 </Right>
             </ListItem>
         );

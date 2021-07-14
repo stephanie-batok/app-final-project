@@ -44,7 +44,7 @@ export default function RiderFeedback({route,navigation}) {
             })
             .then((result) => {
                 console.log(result);
-                navigation.navigate("Schedule");
+                navigation.navigate("HomePage");
                 },
                 (error) => {
                 console.log(error);
