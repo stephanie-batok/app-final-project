@@ -219,7 +219,7 @@ export default function ViewLesson({route,navigation}) {
                     <Item style={styles.item}>
                         <Icon active name='ribbon-outline' />
                         <Text style={styles.itemLabel}>ציון התאמה לסוס: </Text>
-                        <Text>{lesson.match_rank!==null?parseFloat(lesson.match_rank)*100:null}%</Text>
+                        <Text>{lesson.match_rank!==null?(parseFloat(lesson.match_rank)*100).toString().substring(0,2):null}%</Text>
                     </Item>
                     <Item style={styles.item}>
                         <Icon active name='ios-chatbox-ellipses-outline' />

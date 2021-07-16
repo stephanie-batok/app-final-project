@@ -161,11 +161,15 @@ export default function Schedule({navigation}) {
 
     return (
         <View style={styles.container}>
-            {items!==""?<Agenda
+            {items!==""?
+            <Agenda
                 items={items}
+                showClosingKnob={true}
+                hideKnob={false}
                 renderItem={(item) => renderItem(item)}
                 renderEmptyDate={() => renderEmptyDate()}
-            />:null}
+            />:
+            null}
         </View>
     )
 }
@@ -174,6 +178,7 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         backgroundColor:"white",
+        
     },
     item: {
         backgroundColor: 'white',

@@ -70,9 +70,9 @@ export default function UserChats({navigation}) {
         if (item.user_id1===my_id) {
           return (
             <>
-                <ListItem thumbnail onPress={go2Chat(item.user_id2,item.chat_num)} >
+                <ListItem avatar onPress={go2Chat(item.user_id2,item.chat_num)} style={{paddingTop:15}} >
                     <Left>
-                        <Thumbnail style={{width: 45, height: 45}} source={{ uri: uplodedPicPath+item.user_profile2 }} />
+                        <Thumbnail style={{width: 40, height: 40}} source={{ uri: uplodedPicPath+item.user_profile2 }} />
                     </Left>
                     <Body style={{alignItems:'flex-start'}}>
                         <Text style={{fontSize: 15,fontWeight:'bold'}} >{item.user_name2}</Text>
@@ -87,9 +87,9 @@ export default function UserChats({navigation}) {
         } else {
           return (
             <>
-                <ListItem thumbnail onPress={go2Chat(item.user_id1,item.chat_num)} >
+                <ListItem avatar onPress={go2Chat(item.user_id1,item.chat_num)} style={{paddingTop:15}} >
                     <Left>
-                        <Thumbnail style={{width: 45, height: 45}} source={{ uri: uplodedPicPath+item.user_profile1 }} />
+                        <Thumbnail style={{width: 40, height: 40}} source={{ uri: uplodedPicPath+item.user_profile1 }} />
                     </Left>
                     <Body style={{alignItems:'flex-start'}} >
                         <Text style={{fontSize: 15,fontWeight:'bold'}}>{item.user_name1}</Text>
@@ -113,14 +113,12 @@ export default function UserChats({navigation}) {
     }
 
     return (
-        <>
-            {chats.length>0?
-            <FlatList
-                data={chats}
-                renderItem={this.renderItem}
-                keyExtractor={item => item.chat_num.toString()}
-            />:null}
-        </>
+        <FlatList
+            data={chats}
+            renderItem={this.renderItem}
+            keyExtractor={item => item.chat_num.toString()}
+            ListEmptyComponent = {(<Text style={{fontSize: 13,paddingTop:20,textAlign:"center"}}>אין הודעות</Text>)}
+        />
     )
 }
 

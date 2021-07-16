@@ -88,6 +88,7 @@ export default function Notifications({navigation}) {
             data={notifications}
             renderItem={this.renderItem}
             keyExtractor={item => item.notification_id.toString()}
+            ListEmptyComponent = {(<Text style={{fontSize: 13,paddingTop:20,textAlign:"center"}}>אין התראות</Text>)}
         >
         </FlatList>
     )

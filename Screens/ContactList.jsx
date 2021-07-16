@@ -45,9 +45,9 @@ export default function ContactList({navigation}) {
 
     renderItem = ({ item }) => {
         return (
-                <ListItem thumbnail onPress={go2Chat(item.id)}>
+                <ListItem avatar onPress={go2Chat(item.id)}>
                     <Left>
-                        <Thumbnail style={{width: 35, height: 35}} source={{ uri: uplodedPicPath+item.profileImg }} />
+                        <Thumbnail style={{width: 35, height: 35,marginBottom:8}} source={{ uri: uplodedPicPath+item.profileImg }} />
                     </Left>
                     <Body style={{alignItems:'flex-start'}}>
                         <Text>{item.first_name+" "+item.last_name}</Text>

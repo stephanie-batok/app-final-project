@@ -72,7 +72,8 @@ export default function HomePage({route,navigation}) {
                     alert(error);
                 }
             );
-
+            
+            let newMessage="";
             fetch(apiUrl+"Profile/Message/"+id,
                 {
                     method: 'GET',
@@ -82,16 +83,22 @@ export default function HomePage({route,navigation}) {
                     })
                 })
                 .then(res => {
+                    if(res.status===200){
+                        newMessage=true;
+                    }
                     return res.json();
                 })
                 .then((result) => {
-                    setLastMessage(result);
+                    if(newMessage&&result!==null){
+                        setLastMessage(result);
+                    }
                     },
                     (error) => {
                     console.log(error);
                 }
             );
-            
+
+            let newNotification="";
             fetch(apiUrl+"Profile/Notifications/"+id,
                 {
                     method: 'GET',
@@ -101,10 +108,15 @@ export default function HomePage({route,navigation}) {
                     })
                 })
                 .then(res => {
+                    if(res.status===200){
+                        newNotification=true;
+                    }
                     return res.json();
                 })
                 .then((result) => {
-                    setLastNotification(result);
+                    if(newNotification&&result!==null){
+                        setLastNotification(result);
+                    }
                     },
                     (error) => {
                     console.log(error);
@@ -287,10 +299,10 @@ export default function HomePage({route,navigation}) {
                             <Text style={styles.titleText}>הודעה אחרונה</Text>
                         </CardItem>
                         <CardItem cardBody>
-                            <Text style={styles.titleText}>{lastMessage && (lastMessage.user_id1===id?lastMessage.user_name2:lastMessage.user_name1)+":  "} </Text>
+                            <Text style={styles.cardText}>{lastMessage!==false?(lastMessage.user_id1===id?lastMessage.user_name2:lastMessage.user_name1)+":  ":"אין הודעות חדשות"} </Text>
                         </CardItem>
                         <CardItem cardBody>
-                            <Text numberOfLines={1} style={styles.cardText}>{lastMessage && lastMessage.last_message}</Text>
+                            <Text numberOfLines={1} style={styles.cardText}>{lastMessage&&(lastMessage.last_message.length>=18?lastMessage.last_message.substring(0,18)+"...":lastMessage.last_message)}</Text>
                         </CardItem>
                     </Card>
                 </TouchableOpacity>
@@ -303,7 +315,7 @@ export default function HomePage({route,navigation}) {
                             <Text style={styles.titleText}>התראה אחרונה</Text>
                         </CardItem>
                         <CardItem cardBody>
-                            <Text style={styles.cardText}>{lastNotification && lastNotification.text}</Text>
+                            <Text style={styles.cardText}>{lastNotification !==false?lastNotification.text:"אין התראות חדשות"}</Text>
                         </CardItem>
                     </Card>
                 </TouchableOpacity>
@@ -318,6 +330,7 @@ export default function HomePage({route,navigation}) {
                 {items!==""?
                 <Agenda
                     items={items}
+                    selected={Date.now}
                     renderItem={(item) => renderItem(item)}
                     renderEmptyDate={() => renderEmptyDate()}
                     hideKnob={true}
@@ -349,15 +362,16 @@ const styles = StyleSheet.create({
         marginTop:60
     },
     cards:{
-        width:140,
-        height:140,
+        width:150,
+        height:150,
         marginRight:15,
         marginLeft:15,
         padding:10,
         alignItems:"center",
     },
     cardText:{
-        fontSize:12
+        fontSize:12,
+        textAlign:"center"
     },
     bottomView:{
         flex:1,
